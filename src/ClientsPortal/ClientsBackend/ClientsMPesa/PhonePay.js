@@ -1,9 +1,11 @@
-const mpesa_system = require("express")
-const mpesa_env_details = require("dotenv")
-const mpesa_moment = require("moment")
-const mpesa_resi_api = require("axios")
+import { Router } from "express"
+import { config } from "dotenv"
+import mpesa_moment from "moment"
+import { get, post } from "axios"
 
-const mpesa_router = mpesa_system.Router()
+const mpesa_router = Router()
+
+config()
 
 const {
   SAFARICOM_CONSUMER_KEY,
@@ -19,7 +21,7 @@ async function getToken() {
   const auth = Buffer.from(
     `${SAFARICOM_CONSUMER_KEY}:${SAFARICOM_CONSUER_SECRET}`
   )
-  const response = await mpesa_resi_api.get(url, {
+  const response = await get(url, {
     headers: {
       Authroization: `Basic ${auth}`
     }
@@ -50,7 +52,7 @@ mpesa_router.post("/stkpush", async(req, res) => {
       TransactionDesc: "Ecommerce Payment"
     }
 
-    const response = await mpesa_resi_api.post(stkurl, data, {
+    const response = await post(stkurl, data, {
       headers: { Authroization: `Bearer ${token}` }
     })
 
@@ -73,5 +75,4 @@ mpesa_router.get('/checkout', (req, res) => {
   res.render('checkout')
 })
 
-module.exports = mpesa_router
-
+export default mpesa_router
